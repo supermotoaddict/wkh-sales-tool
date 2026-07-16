@@ -17,6 +17,15 @@ export default function HomePage() {
         <SalesFunnel />
       </main>
 
+      <section className="visual-strip" aria-label="Warm home inspiration">
+        <div className="visual-card">
+          <img src="/images/insulation-detail.png" alt="Ceiling insulation installation" />
+        </div>
+        <div className="visual-card">
+          <img src="/images/brand-atmosphere.png" alt="" aria-hidden="true" />
+        </div>
+      </section>
+
       <footer className="foot">
         <Link href="/terms">Terms &amp; privacy</Link>
         <span aria-hidden="true">·</span>
