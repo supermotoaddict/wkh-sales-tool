@@ -13,8 +13,8 @@ const bodySchema = z.object({
   contactEmail: z.string().optional(),
   contactPhone: z.string().optional(),
   yearsSinceClaim: z.string().optional(),
-  claimScenario: z
-    .enum(["still_cold", "new_owner", "incomplete_install", "other", ""])
+  claimScenarios: z
+    .array(z.enum(["still_cold", "new_owner", "incomplete_install", "other"]))
     .optional(),
 });
 
@@ -41,9 +41,9 @@ export async function POST(request: Request) {
           { status: 400 }
         );
       }
-      if (!payload.claimScenario) {
+      if (!payload.claimScenarios?.length) {
         return NextResponse.json(
-          { error: "Please select the scenario that best matches your situation." },
+          { error: "Please select at least one situation that matches your inquiry." },
           { status: 400 }
         );
       }

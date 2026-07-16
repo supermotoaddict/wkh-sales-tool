@@ -72,8 +72,7 @@ export type ClaimScenario =
   | "still_cold"
   | "new_owner"
   | "incomplete_install"
-  | "other"
-  | "";
+  | "other";
 
 export interface SubmissionPayload {
   result: EligibilityResult;
@@ -83,5 +82,6 @@ export interface SubmissionPayload {
   contactPhone?: string;
   /** How long since the previous claim / insulation work (free text, e.g. "8 years", "2019"). */
   yearsSinceClaim?: string;
-  claimScenario?: ClaimScenario;
+  /** One or more situations that apply to the inquiry. */
+  claimScenarios?: ClaimScenario[];
 }

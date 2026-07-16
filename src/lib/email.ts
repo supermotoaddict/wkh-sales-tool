@@ -53,9 +53,11 @@ function buildEmailContent(payload: SubmissionPayload): { subject: string; text:
     result.eeca.error ? `  EECA error: ${result.eeca.error}` : "",
     "",
     `Years / time since last claim: ${payload.yearsSinceClaim || "—"}`,
-    `Claim scenario: ${
-      payload.claimScenario
-        ? SCENARIO_LABELS[payload.claimScenario] || payload.claimScenario
+    `Claim scenarios: ${
+      payload.claimScenarios?.length
+        ? payload.claimScenarios
+            .map((s) => SCENARIO_LABELS[s] || s)
+            .join("; ")
         : "—"
     }`,
     "",

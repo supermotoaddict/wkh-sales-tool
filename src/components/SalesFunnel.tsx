@@ -40,7 +40,7 @@ export default function SalesFunnel() {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [yearsSinceClaim, setYearsSinceClaim] = useState("");
-  const [claimScenario, setClaimScenario] = useState<ClaimScenario>("");
+  const [claimScenarios, setClaimScenarios] = useState<ClaimScenario[]>([]);
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<string | null>(null);
   const [searching, setSearching] = useState(false);
@@ -201,7 +201,7 @@ export default function SalesFunnel() {
       return;
     }
     if (result.eeca.hasExistingClaim) {
-      if (!yearsSinceClaim.trim() || !claimScenario || !message.trim()) {
+      if (!yearsSinceClaim.trim() || claimScenarios.length === 0 || !message.trim()) {
         setStatus("Please complete the existing-claim questions.");
         return;
       }
@@ -217,7 +217,7 @@ export default function SalesFunnel() {
           contactEmail: email,
           contactMessage: message,
           yearsSinceClaim,
-          claimScenario,
+          claimScenarios,
         }),
       });
       const data = await res.json();
@@ -242,9 +242,15 @@ export default function SalesFunnel() {
     setPhone("");
     setEmail("");
     setYearsSinceClaim("");
-    setClaimScenario("");
+    setClaimScenarios([]);
     setMessage("");
     setStatus(null);
+  }
+
+  function toggleScenario(value: ClaimScenario) {
+    setClaimScenarios((prev) =>
+      prev.includes(value) ? prev.filter((s) => s !== value) : [...prev, value]
+    );
   }
 
   const stepNum =
@@ -508,14 +514,15 @@ export default function SalesFunnel() {
                   onChange={(e) => setYearsSinceClaim(e.target.value)}
                 />
               </label>
-              <p className="field-label">Your situation</p>
+              <p className="field-label">Your situation (select all that apply)</p>
               <div className="chip-row">
                 {SCENARIOS.map((s) => (
                   <button
                     key={s.value}
                     type="button"
-                    className={claimScenario === s.value ? "chip on" : "chip"}
-                    onClick={() => setClaimScenario(s.value)}
+                    className={claimScenarios.includes(s.value) ? "chip on" : "chip"}
+                    aria-pressed={claimScenarios.includes(s.value)}
+                    onClick={() => toggleScenario(s.value)}
                   >
                     {s.label}
                   </button>
