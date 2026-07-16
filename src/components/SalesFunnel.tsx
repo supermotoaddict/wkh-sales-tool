@@ -8,6 +8,7 @@ import type {
   EligibilityResult,
   Occupancy,
 } from "@/lib/types";
+import type { YearBuiltLookup } from "@/lib/yearBuilt";
 
 type Step =
   | "address"
@@ -34,6 +35,9 @@ export default function SalesFunnel() {
   const [consent, setConsent] = useState(false);
   const [occupancy, setOccupancy] = useState<Occupancy | null>(null);
   const [builtBefore2008, setBuiltBefore2008] = useState<boolean | null>(null);
+  const [yearBuilt, setYearBuilt] = useState<YearBuiltLookup | null>(null);
+  const [yearBuiltLoading, setYearBuiltLoading] = useState(false);
+  const [yearBuiltManual, setYearBuiltManual] = useState(false);
   const [result, setResult] = useState<EligibilityResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [name, setName] = useState("");
@@ -47,6 +51,17 @@ export default function SalesFunnel() {
   const [isPending, startTransition] = useTransition();
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const yearBuiltReqRef = useRef(0);
+  const stepRef = useRef<Step>(step);
+  const yearBuiltManualRef = useRef(false);
+
+  useEffect(() => {
+    stepRef.current = step;
+  }, [step]);
+
+  useEffect(() => {
+    yearBuiltManualRef.current = yearBuiltManual;
+  }, [yearBuiltManual]);
 
   useEffect(() => {
     panelRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -76,57 +91,53 @@ export default function SalesFunnel() {
     setAddress(item);
     setQuery(item.label);
     setSuggestions([]);
+    setYearBuilt(null);
+    setYearBuiltManual(false);
+    setBuiltBefore2008(null);
+    prefetchYearBuilt(item.label);
   }
 
   function onQuery(value: string) {
     setAddress(null);
     setQuery(value);
+    setYearBuilt(null);
+    setYearBuiltManual(false);
+    setBuiltBefore2008(null);
     if (value.trim().length < 3) setSuggestions([]);
+  }
+
+  async function prefetchYearBuilt(label: string) {
+    const reqId = ++yearBuiltReqRef.current;
+    setYearBuiltLoading(true);
+    try {
+      const res = await fetch(`/api/year-built?address=${encodeURIComponent(label)}`);
+      const data = await res.json();
+      if (reqId !== yearBuiltReqRef.current) return;
+      const lookup = (data.lookup as YearBuiltLookup) ?? null;
+      setYearBuilt(lookup);
+      // If user is waiting on the built step, apply the answer once lookup settles
+      if (
+        stepRef.current === "built" &&
+        !yearBuiltManualRef.current &&
+        lookup?.builtBefore2008 != null
+      ) {
+        window.setTimeout(() => applyBuiltAnswer(lookup.builtBefore2008!), 350);
+      }
+    } catch {
+      if (reqId !== yearBuiltReqRef.current) return;
+      setYearBuilt(null);
+    } finally {
+      if (reqId === yearBuiltReqRef.current) setYearBuiltLoading(false);
+    }
   }
 
   function goOccupancy() {
     if (!address || !consent) return;
+    if (!yearBuilt && !yearBuiltLoading) prefetchYearBuilt(address.label);
     setStep("occupancy");
   }
 
-  function chooseOccupancy(value: Occupancy) {
-    setOccupancy(value);
-    if (value === "rental") {
-      // Still run a local result without EECA for speed
-      setResult({
-        eligible: false,
-        fundingPercent: null,
-        fundingReason: "Rental properties are not eligible.",
-        ineligibleReason:
-          "This programme is only for owner-occupied homes — not rentals.",
-        nzDep: null,
-        eeca: {
-          checked: false,
-          hasExistingClaim: false,
-          hasInsulation: false,
-          hasHeating: false,
-          hasInsulationRequest: false,
-          hasHeatingRequest: false,
-          addressInsulationValid: null,
-          addressHeatingValid: null,
-          claimSummary: null,
-        },
-        answers: {
-          addressLabel: address!.label,
-          addressId: address!.id,
-          occupancy: "rental",
-          builtBefore2008: true,
-          hasCommunityServicesCard: false,
-        },
-        checkedAt: new Date().toISOString(),
-      });
-      setStep("result");
-      return;
-    }
-    setStep("built");
-  }
-
-  function chooseBuilt(value: boolean) {
+  function applyBuiltAnswer(value: boolean) {
     setBuiltBefore2008(value);
     if (!value) {
       setResult({
@@ -159,6 +170,53 @@ export default function SalesFunnel() {
       return;
     }
     setStep("csc");
+  }
+
+  function chooseOccupancy(value: Occupancy) {
+    setOccupancy(value);
+    if (value === "rental") {
+      setResult({
+        eligible: false,
+        fundingPercent: null,
+        fundingReason: "Rental properties are not eligible.",
+        ineligibleReason:
+          "This programme is only for owner-occupied homes — not rentals.",
+        nzDep: null,
+        eeca: {
+          checked: false,
+          hasExistingClaim: false,
+          hasInsulation: false,
+          hasHeating: false,
+          hasInsulationRequest: false,
+          hasHeatingRequest: false,
+          addressInsulationValid: null,
+          addressHeatingValid: null,
+          claimSummary: null,
+        },
+        answers: {
+          addressLabel: address!.label,
+          addressId: address!.id,
+          occupancy: "rental",
+          builtBefore2008: true,
+          hasCommunityServicesCard: false,
+        },
+        checkedAt: new Date().toISOString(),
+      });
+      setStep("result");
+      return;
+    }
+
+    // Owner path: auto-use year-built if already resolved; else show built step
+    if (!yearBuiltManual && yearBuilt?.builtBefore2008 != null) {
+      applyBuiltAnswer(yearBuilt.builtBefore2008);
+      return;
+    }
+    setStep("built");
+  }
+
+  function chooseBuilt(value: boolean) {
+    setYearBuiltManual(true);
+    applyBuiltAnswer(value);
   }
 
   function chooseCsc(value: boolean) {
@@ -229,6 +287,7 @@ export default function SalesFunnel() {
   }
 
   function restart() {
+    yearBuiltReqRef.current += 1;
     setStep("address");
     setQuery("");
     setSuggestions([]);
@@ -236,6 +295,9 @@ export default function SalesFunnel() {
     setConsent(false);
     setOccupancy(null);
     setBuiltBefore2008(null);
+    setYearBuilt(null);
+    setYearBuiltLoading(false);
+    setYearBuiltManual(false);
     setResult(null);
     setError(null);
     setName("");
@@ -263,6 +325,7 @@ export default function SalesFunnel() {
       return;
     }
     if (step === "csc") {
+      setYearBuiltManual(true);
       setStep("built");
       return;
     }
@@ -389,14 +452,47 @@ export default function SalesFunnel() {
         <section className="screen">
           <h2>Was it built before 2008?</h2>
           <p className="sub">Homes from 2008 onwards don&apos;t qualify.</p>
-          <div className="tap-stack">
-            <button type="button" className="tap" onClick={() => chooseBuilt(true)}>
-              Yes
-            </button>
-            <button type="button" className="tap muted" onClick={() => chooseBuilt(false)}>
-              No
-            </button>
-          </div>
+
+          {yearBuiltLoading && !yearBuiltManual && (
+            <div className="lookup-box">
+              <div className="spinner small" />
+              <p>Looking up build decade from property records…</p>
+              <button
+                type="button"
+                className="cta ghost"
+                onClick={() => setYearBuiltManual(true)}
+              >
+                I&apos;ll answer myself
+              </button>
+            </div>
+          )}
+
+          {!yearBuiltLoading && yearBuilt?.builtBefore2008 != null && !yearBuiltManual && (
+            <div className="lookup-box ok">
+              <p className="lookup-title">Found in property records</p>
+              <p>{yearBuilt.summary}</p>
+              <p className="hint">Continuing automatically…</p>
+            </div>
+          )}
+
+          {(yearBuiltManual || (!yearBuiltLoading && yearBuilt?.builtBefore2008 == null)) && (
+            <>
+              {yearBuilt?.summary && (
+                <div className="lookup-box">
+                  <p className="lookup-title">Property records</p>
+                  <p>{yearBuilt.summary}</p>
+                </div>
+              )}
+              <div className="tap-stack">
+                <button type="button" className="tap" onClick={() => chooseBuilt(true)}>
+                  Yes — before 2008
+                </button>
+                <button type="button" className="tap muted" onClick={() => chooseBuilt(false)}>
+                  No — 2008 or later
+                </button>
+              </div>
+            </>
+          )}
         </section>
       )}
 
@@ -406,6 +502,25 @@ export default function SalesFunnel() {
           <p className="sub">
             CSC or SuperGold Combo = up to <strong>90%</strong> funded, any zone.
           </p>
+          {yearBuilt?.summary && builtBefore2008 != null && (
+            <div className="lookup-box ok compact">
+              <p>
+                {builtBefore2008
+                  ? yearBuilt.summary || "Treated as built before 2008."
+                  : yearBuilt.summary || "Treated as built 2008 or later."}
+              </p>
+              <button
+                type="button"
+                className="linkish"
+                onClick={() => {
+                  setYearBuiltManual(true);
+                  setStep("built");
+                }}
+              >
+                Change year built
+              </button>
+            </div>
+          )}
           {error && <p className="alert">{error}</p>}
           <div className="tap-stack">
             <button

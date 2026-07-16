@@ -495,6 +495,62 @@ a {
   animation: spin 0.75s linear infinite;
 }
 
+.spinner.small {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: 0 auto 0.65rem;
+  border-width: 2px;
+}
+
+.lookup-box {
+  background: var(--foam);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0.95rem 1rem;
+  margin: 0 0 1rem;
+  text-align: center;
+  line-height: 1.45;
+  font-size: 0.95rem;
+}
+
+.lookup-box.ok {
+  background: #e8f8f0;
+  border-color: rgba(6, 122, 79, 0.2);
+}
+
+.lookup-box.compact {
+  text-align: left;
+}
+
+.lookup-box p {
+  margin: 0 0 0.45rem;
+}
+
+.lookup-box p:last-child {
+  margin-bottom: 0;
+}
+
+.lookup-title {
+  font-weight: 750;
+  color: var(--teal);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.linkish {
+  border: 0;
+  background: transparent;
+  color: var(--teal);
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0.25rem 0 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
