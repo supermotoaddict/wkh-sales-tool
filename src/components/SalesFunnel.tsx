@@ -236,7 +236,6 @@ export default function SalesFunnel() {
     setConsent(false);
     setOccupancy(null);
     setBuiltBefore2008(null);
-    setHasCsc(null);
     setResult(null);
     setError(null);
     setName("");
