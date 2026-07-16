@@ -253,6 +253,44 @@ export default function SalesFunnel() {
     );
   }
 
+  function goBack() {
+    if (step === "occupancy") {
+      setStep("address");
+      return;
+    }
+    if (step === "built") {
+      setStep("occupancy");
+      return;
+    }
+    if (step === "csc") {
+      setStep("built");
+      return;
+    }
+    if (step === "checking") {
+      setStep("csc");
+      return;
+    }
+    if (step === "result") {
+      if (occupancy === "rental") {
+        setStep("occupancy");
+      } else if (builtBefore2008 === false) {
+        setStep("built");
+      } else {
+        setStep("csc");
+      }
+      return;
+    }
+    if (step === "lead") {
+      setStep("result");
+      return;
+    }
+    if (step === "done") {
+      setStep("lead");
+    }
+  }
+
+  const canGoBack = step !== "address";
+
   const stepNum =
     step === "address"
       ? 1
@@ -269,7 +307,16 @@ export default function SalesFunnel() {
       <div className="progress-track" aria-hidden="true">
         <div className="progress-fill" style={{ width: `${(stepNum / 5) * 100}%` }} />
       </div>
-      <p className="step-label">Step {Math.min(stepNum, 4)} of 4</p>
+      <div className="funnel-top">
+        {canGoBack ? (
+          <button type="button" className="back" onClick={goBack}>
+            ← Back
+          </button>
+        ) : (
+          <span className="back-spacer" aria-hidden="true" />
+        )}
+        <p className="step-label">Step {Math.min(stepNum, 4)} of 4</p>
+      </div>
 
       {step === "address" && (
         <section className="screen">
@@ -321,9 +368,6 @@ export default function SalesFunnel() {
 
       {step === "occupancy" && (
         <section className="screen">
-          <button type="button" className="back" onClick={() => setStep("address")}>
-            ← Back
-          </button>
           <h2>Do you own and live in this home?</h2>
           <p className="sub">Rentals don&apos;t qualify for this grant.</p>
           <div className="tap-stack">
@@ -343,9 +387,6 @@ export default function SalesFunnel() {
 
       {step === "built" && (
         <section className="screen">
-          <button type="button" className="back" onClick={() => setStep("occupancy")}>
-            ← Back
-          </button>
           <h2>Was it built before 2008?</h2>
           <p className="sub">Homes from 2008 onwards don&apos;t qualify.</p>
           <div className="tap-stack">
@@ -361,9 +402,6 @@ export default function SalesFunnel() {
 
       {step === "csc" && (
         <section className="screen">
-          <button type="button" className="back" onClick={() => setStep("built")}>
-            ← Back
-          </button>
           <h2>Community Services Card?</h2>
           <p className="sub">
             CSC or SuperGold Combo = up to <strong>90%</strong> funded, any zone.
@@ -395,6 +433,9 @@ export default function SalesFunnel() {
           <div className="spinner" />
           <h2>Checking your address…</h2>
           <p className="sub">Funding zone + any existing EECA claim. Usually a few seconds.</p>
+          <button type="button" className="cta ghost" onClick={goBack}>
+            Cancel &amp; go back
+          </button>
         </section>
       )}
 
@@ -449,6 +490,10 @@ export default function SalesFunnel() {
             </button>
           )}
 
+          <button type="button" className="cta ghost" onClick={goBack}>
+            ← Edit answers
+          </button>
+
           {!result.eligible && !result.eeca.hasExistingClaim && (
             <button type="button" className="cta ghost" onClick={restart}>
               Try another address
@@ -459,9 +504,6 @@ export default function SalesFunnel() {
 
       {step === "lead" && result && (
         <section className="screen">
-          <button type="button" className="back" onClick={() => setStep("result")}>
-            ← Back
-          </button>
           <h2>{result.eeca.hasExistingClaim ? "Tell us what happened" : "Where can we reach you?"}</h2>
           <p className="sub">
             {result.eeca.hasExistingClaim
@@ -565,6 +607,9 @@ export default function SalesFunnel() {
           <div className="status ok">Sent</div>
           <h2>Thanks — we&apos;ve got it</h2>
           <p className="sub">Our team will be in touch shortly.</p>
+          <button type="button" className="cta ghost" onClick={goBack}>
+            ← Back to details
+          </button>
           <button type="button" className="cta ghost" onClick={restart}>
             Check another address
           </button>

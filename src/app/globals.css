@@ -150,13 +150,29 @@ a {
   transition: width 0.35s ease;
 }
 
+.funnel-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+  min-height: 2.75rem;
+}
+
 .step-label {
-  margin: 0 0 1rem;
+  margin: 0;
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: rgba(18, 32, 30, 0.5);
+  text-align: right;
+}
+
+.back-spacer {
+  display: inline-block;
+  min-width: 4.5rem;
+  min-height: 2.75rem;
 }
 
 .screen h2 {
@@ -326,10 +342,19 @@ a {
   background: transparent;
   color: var(--teal);
   font: inherit;
-  font-weight: 650;
-  padding: 0;
-  margin: 0 0 0.85rem;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 0.55rem 0.15rem;
+  margin: 0;
+  min-height: 2.75rem;
+  min-width: 4.5rem;
   cursor: pointer;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.back:active {
+  opacity: 0.7;
 }
 
 .hint {
