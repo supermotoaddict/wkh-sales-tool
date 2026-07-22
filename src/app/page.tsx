@@ -17,13 +17,12 @@ export default function HomePage() {
         <SalesFunnel />
       </main>
 
-      <section className="visual-strip" aria-label="Warm home inspiration">
-        <div className="visual-card">
-          <img src="/images/insulation-detail.png" alt="Ceiling insulation installation" />
-        </div>
-        <div className="visual-card">
-          <img src="/images/brand-atmosphere.png" alt="" aria-hidden="true" />
-        </div>
+      <section className="visual-strip" aria-label="Insulation installation">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/insulation-detail.png"
+          alt="Installer fitting ceiling insulation"
+        />
       </section>
 
       <footer className="foot">
