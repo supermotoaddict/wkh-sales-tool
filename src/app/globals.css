@@ -1,20 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  --ink: #12201e;
-  --teal: #0b3d38;
-  --teal-soft: #13564e;
-  --foam: #eef7f4;
-  --sand: #f3efe6;
-  --amber: #e8a317;
-  --amber-ink: #3d2a05;
-  --danger: #b42318;
-  --ok: #067a4f;
-  --line: rgba(11, 61, 56, 0.14);
-  --font-display: "Fraunces", Georgia, serif;
-  --font-sans: "DM Sans", system-ui, sans-serif;
+  --ink: #03005c;
+  --teal: #03005c;
+  --teal-soft: #1a187a;
+  --foam: #fff4e8;
+  --sand: #f7f4ef;
+  --amber: #f68420;
+  --amber-ink: #ffffff;
+  --danger: #b20000;
+  --ok: #627d47;
+  --line: rgba(3, 0, 92, 0.14);
+  --font-display: var(--font-sans);
+  --font-sans: "Lato", "Helvetica Neue", sans-serif;
   --radius: 1.15rem;
-  --shadow: 0 18px 50px rgba(11, 61, 56, 0.18);
+  --shadow: 0 18px 50px rgba(3, 0, 92, 0.16);
 }
 
 * {
@@ -31,8 +31,9 @@ body {
   font-family: var(--font-sans);
   color: var(--ink);
   background:
-    radial-gradient(900px 420px at 80% -10%, rgba(232, 163, 23, 0.18), transparent 55%),
-    linear-gradient(180deg, #f6faf8 0%, #e9f2ef 100%);
+    radial-gradient(900px 420px at 90% -10%, rgba(246, 132, 32, 0.2), transparent 55%),
+    radial-gradient(700px 380px at 0% 0%, rgba(3, 0, 92, 0.08), transparent 50%),
+    linear-gradient(180deg, #ffffff 0%, #f6f7fb 45%, #fff7ef 100%);
   min-height: 100vh;
   min-height: 100dvh;
 }
@@ -58,9 +59,8 @@ a {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(8, 40, 36, 0.35) 0%, rgba(8, 40, 36, 0.82) 100%),
-    url("https://images.unsplash.com/photo-1560185127-6ed189bf02f4?auto=format&fit=crop&w=1600&q=75")
-      center / cover no-repeat;
+    linear-gradient(180deg, rgba(3, 0, 92, 0.35) 0%, rgba(3, 0, 92, 0.78) 55%, rgba(3, 0, 92, 0.92) 100%),
+    url("/images/hero-warm-home.png") center / cover no-repeat;
   animation: slowZoom 16s ease-in-out infinite alternate;
 }
 
@@ -94,9 +94,9 @@ a {
 }
 
 .brand {
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: clamp(2rem, 8vw, 2.75rem);
-  font-weight: 560;
+  font-weight: 900;
   letter-spacing: -0.03em;
   line-height: 1.05;
   margin: 0 0 0.55rem;
@@ -138,14 +138,14 @@ a {
 .progress-track {
   height: 4px;
   border-radius: 999px;
-  background: rgba(11, 61, 56, 0.1);
+  background: rgba(3, 0, 92, 0.1);
   overflow: hidden;
   margin-bottom: 0.55rem;
 }
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--teal), var(--amber));
+  background: linear-gradient(90deg, #03005c, #f68420);
   border-radius: inherit;
   transition: width 0.35s ease;
 }
@@ -165,7 +165,7 @@ a {
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: rgba(18, 32, 30, 0.5);
+  color: rgba(3, 0, 92, 0.5);
   text-align: right;
 }
 
@@ -176,8 +176,9 @@ a {
 }
 
 .screen h2 {
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: clamp(1.45rem, 5.5vw, 1.85rem);
+  font-weight: 900;
   letter-spacing: -0.02em;
   margin: 0 0 0.4rem;
   color: var(--teal);
@@ -186,7 +187,7 @@ a {
 
 .sub {
   margin: 0 0 1.1rem;
-  color: rgba(18, 32, 30, 0.68);
+  color: rgba(3, 0, 92, 0.68);
   line-height: 1.45;
   font-size: 0.98rem;
 }
@@ -213,7 +214,7 @@ a {
 }
 
 .big-input:focus {
-  outline: 2px solid rgba(11, 61, 56, 0.35);
+  outline: 2px solid rgba(3, 0, 92, 0.35);
   border-color: var(--teal);
 }
 
@@ -262,7 +263,7 @@ a {
   margin: 1rem 0;
   font-size: 0.88rem;
   line-height: 1.4;
-  color: rgba(18, 32, 30, 0.75);
+  color: rgba(3, 0, 92, 0.75);
 }
 
 .consent input {
@@ -334,7 +335,7 @@ a {
 
 .tap.muted {
   font-weight: 600;
-  color: rgba(18, 32, 30, 0.78);
+  color: rgba(3, 0, 92, 0.78);
 }
 
 .back {
@@ -359,7 +360,7 @@ a {
 
 .hint {
   font-size: 0.85rem;
-  color: rgba(18, 32, 30, 0.55);
+  color: rgba(3, 0, 92, 0.55);
   margin: 0.4rem 0 0;
 }
 
@@ -400,7 +401,8 @@ a {
 }
 
 .funding {
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
+  font-weight: 900;
   font-size: clamp(1.6rem, 6vw, 2.1rem);
   margin: 0 0 0.55rem;
   line-height: 1.15;
@@ -408,7 +410,7 @@ a {
 }
 
 .funding span {
-  color: #0a6b42;
+  color: #f68420;
 }
 
 .funding.soft {
@@ -458,7 +460,7 @@ a {
 
 .opt {
   font-weight: 500;
-  color: rgba(18, 32, 30, 0.45);
+  color: rgba(3, 0, 92, 0.45);
 }
 
 .chip-row {
@@ -490,7 +492,7 @@ a {
   height: 2.2rem;
   margin: 0 auto 1rem;
   border-radius: 50%;
-  border: 3px solid rgba(11, 61, 56, 0.15);
+  border: 3px solid rgba(3, 0, 92, 0.15);
   border-top-color: var(--teal);
   animation: spin 0.75s linear infinite;
 }
@@ -557,6 +559,21 @@ a {
   }
 }
 
+.visual-strip {
+  width: 100%;
+  margin: 0 0 0.25rem;
+  overflow: hidden;
+  max-height: clamp(140px, 28vw, 220px);
+}
+
+.visual-strip img {
+  display: block;
+  width: 100%;
+  height: clamp(140px, 28vw, 220px);
+  object-fit: cover;
+  object-position: center 35%;
+}
+
 .foot {
   display: flex;
   justify-content: center;
@@ -564,7 +581,7 @@ a {
   flex-wrap: wrap;
   padding: 0.5rem 1rem 1.75rem;
   font-size: 0.85rem;
-  color: rgba(18, 32, 30, 0.55);
+  color: rgba(3, 0, 92, 0.55);
 }
 
 .terms {
@@ -591,7 +608,7 @@ a {
 .terms p,
 .terms li {
   line-height: 1.55;
-  color: rgba(18, 32, 30, 0.8);
+  color: rgba(3, 0, 92, 0.8);
 }
 
 @media (min-width: 720px) {
